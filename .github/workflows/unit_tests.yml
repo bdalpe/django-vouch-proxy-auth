@@ -1,3 +1,5 @@
+name: Unit Tests
+
 on: [push, pull_request]
 
 jobs:
@@ -28,4 +30,4 @@ jobs:
         env:
           DJANGO_SETTINGS_MODULE: tests.settings
         run: |
-          python django-admin.py test
+          django-admin.py test
