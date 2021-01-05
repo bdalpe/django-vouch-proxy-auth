@@ -1,0 +1,31 @@
+on: [push, pull_request]
+
+jobs:
+  pypi:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-versions: [ 3.6, 3.7, 3.8, 3.9 ]
+        django-versions: [ 2.2.0, 3.0.0, 3.1.0 ]
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Set up Python ${{ matrix.python-versions }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-versions }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install Django~=${{ matrix.django-versions }}
+
+      - name: Run tests
+        env:
+          DJANGO_SETTINGS_MODULE: tests.settings
+        run: |
+          python django-admin.py test
