@@ -29,5 +29,6 @@ jobs:
       - name: Run tests
         env:
           DJANGO_SETTINGS_MODULE: tests.settings
+          PYTHONPATH: /home/runner/work/django-vouch-proxy-auth/django-vouch-proxy-auth
         run: |
           django-admin.py test
