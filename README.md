@@ -43,6 +43,11 @@ VOUCH_PROXY_VALIDATE_ENDPOINT = 'https://login.avacado.lol/validate'
 ### `VOUCH_PROXY_VALIDATE_ENDPOINT`
 Location of the Vouch Proxy validation endpoint. You MUST provide this value, or the Middleware will raise an `ImproperlyConfigured` exception.
 
+### `VOUCH_PROXY_VERIFY_SSL`
+Default: `True`
+
+Set this to False to ignore verification of the Vouch Proxy SSL certificate.
+
 ### `VOUCH_PROXY_COOKIE_NAME`
 Default: `VouchCookie`
 

@@ -18,6 +18,7 @@ class VouchProxyMiddleware(RemoteUserMiddleware):
         self.expiry_time = getattr(settings, 'VOUCH_PROXY_CACHE_TIMEOUT', 300)
         self.cache = caches[getattr(settings, 'VOUCH_PROXY_CACHE_BACKEND', 'default')]
         self.force_logout_if_no_cookie = getattr(settings, 'VOUCH_PROXY_FORCE_LOGOUT_IF_NO_COOKIE', False)
+        self.verify_ssl_certificate = getattr(settings, 'VOUCH_PROXY_VERIFY_SSL', True)
 
         super(VouchProxyMiddleware).__init__(*args, **kwargs)
 
@@ -42,7 +43,9 @@ class VouchProxyMiddleware(RemoteUserMiddleware):
             cache_key = '{}{}'.format(self.cache_prefix, hashlib.sha256(cookie.encode('ascii')).hexdigest())
             username = self.cache.get(cache_key)
             if not username:
-                validate = requests.get(settings.VOUCH_PROXY_VALIDATE_ENDPOINT, cookies={self.cookie_name: cookie})
+                validate = requests.get(settings.VOUCH_PROXY_VALIDATE_ENDPOINT,
+                                        cookies={self.cookie_name: cookie},
+                                        verify=self.verify_ssl_certificate)
                 validate.raise_for_status()
 
                 # Vouch cookie is URL-safe Base64 encoded Gzipped data
