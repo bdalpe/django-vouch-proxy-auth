@@ -20,7 +20,7 @@ class VouchProxyMiddleware(RemoteUserMiddleware):
         self.force_logout_if_no_cookie = getattr(settings, 'VOUCH_PROXY_FORCE_LOGOUT_IF_NO_COOKIE', False)
         self.verify_ssl_certificate = getattr(settings, 'VOUCH_PROXY_VERIFY_SSL', True)
 
-        super(VouchProxyMiddleware).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def process_request(self, request):
         if request.path in getattr(settings, 'VOUCH_PROXY_DISABLED_PATHS', []):
