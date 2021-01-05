@@ -1,5 +1,5 @@
 # django-vouch-proxy-auth
-Django Middleware enabling the use of the Vouch Proxy cookie for single sign-on.
+Django Middleware enabling the use of the [Vouch Proxy](https://github.com/vouch/vouch-proxy) cookie for single sign-on.
 
 This package subclasses Django's `RemoteUserMiddleware` and `RemoteUserBackend`.
 
