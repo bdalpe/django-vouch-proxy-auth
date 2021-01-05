@@ -112,6 +112,26 @@ class MiddlewareTest(TestCase):
 
             self.assertIsNone(m.process_request(request=m_request))
 
+    def test_ssl_verification_setting(self):
+        self.assertTrue(self.middleware.verify_ssl_certificate)
+
+        with self.settings(VOUCH_PROXY_VERIFY_SSL=False):
+            m = VouchProxyMiddleware()
+            self.assertFalse(m.verify_ssl_certificate)
+
+    @patch('django_vouch_proxy_auth.middleware.requests')
+    def test_ssl_verification_disabled(self, requests_mock):
+        req = self._build_vouch_cookie_request(self.user.username)
+
+        requests_mock.get.status_code.return_value = 200
+
+        self.middleware.verify_ssl_certificate = False
+
+        self.middleware.process_request(request=req)
+        requests_mock.get.assert_called_once_with('http://vouch/validate',
+                                                  cookies={'VouchCookie': req.COOKIES[self.middleware.cookie_name]},
+                                                  verify=False)
+
     @patch('django_vouch_proxy_auth.middleware.requests')
     def test_caching(self, requests_mock):
         req = self._build_vouch_cookie_request(self.user.username)
@@ -122,7 +142,8 @@ class MiddlewareTest(TestCase):
         self.middleware.process_request(request=req)
 
         requests_mock.get.assert_called_once_with('http://vouch/validate',
-                                                  cookies={'VouchCookie': req.COOKIES[self.middleware.cookie_name]})
+                                                  cookies={'VouchCookie': req.COOKIES[self.middleware.cookie_name]},
+                                                  verify=True)
 
     @patch('django_vouch_proxy_auth.middleware.requests')
     def test_caching_disabled(self, requests_mock):
@@ -134,12 +155,14 @@ class MiddlewareTest(TestCase):
 
         self.middleware.process_request(request=req)
         requests_mock.get.assert_called_once_with('http://vouch/validate',
-                                                  cookies={'VouchCookie': req.COOKIES[self.middleware.cookie_name]})
+                                                  cookies={'VouchCookie': req.COOKIES[self.middleware.cookie_name]},
+                                                  verify=True)
         requests_mock.get.reset_mock()
 
         self.middleware.process_request(request=req)
         requests_mock.get.assert_called_once_with('http://vouch/validate',
-                                                  cookies={'VouchCookie': req.COOKIES[self.middleware.cookie_name]})
+                                                  cookies={'VouchCookie': req.COOKIES[self.middleware.cookie_name]},
+                                                  verify=True)
 
     @patch('django_vouch_proxy_auth.middleware.requests')
     def test_successful_auth(self, requests_mock):
@@ -149,7 +172,8 @@ class MiddlewareTest(TestCase):
 
         self.middleware.process_request(request=req)
         requests_mock.get.assert_called_once_with('http://vouch/validate',
-                                                  cookies={'VouchCookie': req.COOKIES[self.middleware.cookie_name]})
+                                                  cookies={'VouchCookie': req.COOKIES[self.middleware.cookie_name]},
+                                                  verify=True)
 
         cache_key = '{}{}'.format(self.middleware.cache_prefix,
                                   hashlib.sha256(req.COOKIES[self.middleware.cookie_name].encode('ascii')).hexdigest())
