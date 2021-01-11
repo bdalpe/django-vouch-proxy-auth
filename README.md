@@ -85,7 +85,7 @@ VOUCH_PROXY_DISABLED_PATHS = ['/oidc/authenticate/', '/oidc/callback/']
 ### `VOUCH_PROXY_CREATE_UNKNOWN_USER`
 Default: `True`
 
-Set this to False if you do not want the middleware to automatically create a user entry on first login. You must use the
+Set this to False if you do not want the middleware to automatically create a user entry on first login. You must use the `VouchProxyUserBackend` for this setting to be honored.
 
 ### `VOUCH_PROXY_FORCE_LOGOUT_IF_NO_COOKIE`
 Default: `False`
